@@ -12,6 +12,7 @@ require 'grover/configuration'
 require 'grover/options_builder'
 require 'grover/dev_tools_parser'
 require 'grover/processor'
+require 'grover/ferrum_processor'
 
 require 'nokogiri'
 require 'yaml'
@@ -154,7 +155,7 @@ class Grover
   end
 
   def processor
-    @processor ||= Processor.new(root_path)
+    @processor ||= FerrumProcessor.new
   end
 
   def normalized_options(path:)
