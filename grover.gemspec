@@ -29,5 +29,18 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
+  spec.add_dependency 'combine_pdf', '~> 1.0'
   spec.add_dependency 'nokogiri', '~> 1'
+
+  spec.add_development_dependency 'mini_magick', '~> 4.12'
+  spec.add_development_dependency 'pdf-reader', '~> 2.11'
+  spec.add_development_dependency 'rack-test', '~> 1.1'
+  spec.add_development_dependency 'rake', '~> 13.0'
+  spec.add_development_dependency 'rspec', '~> 3.12'
+  spec.add_development_dependency 'rubocop', '~> 1.43'
+  spec.add_development_dependency 'rubocop-rake', '~> 0.6'
+  spec.add_development_dependency 'rubocop-rspec', '~> 2.18'
+  # Limit simplecov to 0.17.x due to https://github.com/codeclimate/test-reporter/issues/413
+  spec.add_development_dependency 'simplecov', '~> 0.17', '< 0.18'
+  spec.add_development_dependency 'byebug'
 end

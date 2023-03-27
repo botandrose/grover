@@ -8,11 +8,13 @@ require 'rack/test'
 require 'stringio'
 require 'pdf-reader'
 require 'mini_magick'
+require 'byebug'
 require_relative 'support/test_server'
 
 RSpec.configure do |config|
   config.order = 'random'
   config.filter_run_excluding remote_browser: true
+  config.filter_run_when_matching :focus
 
   if ENV['CI'] == 'true'
     # Retry
