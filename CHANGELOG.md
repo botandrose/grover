@@ -3,6 +3,26 @@
 ## Unreleased
 - none
 
+## [1.1.9](releases/tag/v1.1.9) - 2024-07-02
+### Added
+- [#209](https://github.com/Studiosity/grover/pull/209) Allow loading html from file uri ([@jkowens][])
+
+## [1.1.8](releases/tag/v1.1.8) - 2024-06-23
+### Added
+- [#240](https://github.com/Studiosity/grover/pull/240) Enable passing environment variables to the node process ([@jukra][])
+
+## [1.1.7](releases/tag/v1.1.7) - 2024-03-09
+### Added
+- [#225](https://github.com/Studiosity/grover/pull/225) Add support for fallback to loading `puppeteer-core` dependency ([@sbounmy][], [@dexterouschen][])
+
+### Fixed
+- [#229](https://github.com/Studiosity/grover/pull/229) Better handle WS connection issues ([@abrom][])
+- [#230](https://github.com/Studiosity/grover/pull/230) Better handle WS connection cleanup ([@abrom][], [@dexterouschen][])
+
+## [1.1.6](releases/tag/v1.1.6) - 2024-01-16
+### Added
+- [#216](https://github.com/Studiosity/grover/pull/216) Add ruby 3.3 support and update test suite to use a local server ([@afromankenobi][])
+
 ## [1.1.5](releases/tag/v1.1.5) - 2023-03-02
 ### Added
 - [#178](https://github.com/Studiosity/grover/pull/178) Add remote browser support ([@Zinggi][])
@@ -305,3 +325,8 @@
 [@ElMassimo]: https://github.com/ElMassimo
 [@Yobilat]: https://github.com/Yobilat
 [@Zinggi]: https://github.com/Zinggi
+[@afromankenobi]: https://github.com/afromankenobi
+[@sbounmy]: https://github.com/sbounmy
+[@dexterouschen]: https://github.com/dexterouschen
+[@jukra]: https://github.com/jukra
+[@jkowens]: https://github.com/jkowens

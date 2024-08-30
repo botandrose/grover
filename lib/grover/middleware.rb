@@ -24,11 +24,14 @@ class Grover
       dup._call(env)
     end
 
-    def _call(env)
+    def _call(env) # rubocop:disable Metrics/MethodLength
       @request = Rack::Request.new(env)
       identify_request_type
 
-      configure_env_for_grover_request(env) if grover_request?
+      if grover_request?
+        check_file_uri_configuration
+        configure_env_for_grover_request(env)
+      end
       status, headers, response = @app.call(env)
       response = update_response response, headers if grover_request? && html_content?(headers)
 
@@ -44,6 +47,14 @@ class Grover
     JPEG_REGEX = /\.jpe?g$/i.freeze
 
     attr_reader :pdf_request, :png_request, :jpeg_request
+
+    def check_file_uri_configuration
+      return unless Grover.configuration.allow_file_uris
+
+      # The combination of middleware and allowing file URLs is exceptionally
+      # unsafe as it can lead to data exfiltration from the host system.
+      raise UnsafeConfigurationError, 'using `allow_file_uris` configuration with middleware is exceptionally unsafe'
+    end
 
     def identify_request_type
       @pdf_request = Grover.configuration.use_pdf_middleware && path_matches?(PDF_REGEX)
@@ -70,7 +81,7 @@ class Grover
 
     def ignore_request?
       ignore_request = Grover.configuration.ignore_request
-      return unless ignore_request.is_a?(Proc)
+      return false unless ignore_request.is_a?(Proc)
 
       ignore_request.call @request
     end

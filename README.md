@@ -64,7 +64,7 @@ pdf = Grover.new(html, **grover_options).to_pdf
 If calling Grover directly (not through middleware) you will need to either specify a `display_url` or modify your
 HTML by converting any relative paths to absolute paths before passing to Grover.
 
-This can be achieved using the HTML pre-processor helper:
+This can be achieved using the HTML pre-processor helper (pay attention to the slash at the end of the url):
 
 ```ruby
 absolute_html = Grover::HTMLPreprocessor.process relative_html, 'http://my.server/', 'http'
@@ -184,15 +184,21 @@ Grover.new('<some URI with basic authentication', username: 'the username', pass
 By default, Grover launches a local Chromium instance. You can connect to a remote/external
 Chromium with the `browser_ws_endpoint` options.
 
-For example, to connect to a chrome instance started with docker using `docker run -p 3000:3000 browserless/chrome:latest`:
+For example, to connect to a chrome instance started with docker using `docker run -p 3000:3000 ghcr.io/browserless/chrome:latest`:
 
 ```ruby
-options = {"browser_ws_endpoint": "ws://localhost:3000/"}
+options = {"browser_ws_endpoint": "ws://localhost:3000/chrome"}
 grover = Grover.new("https://mysite.com/path/to/thing", options)
 File.open("grover.png", "wb") { |f| f << grover.to_png }
 ```
 
-You can also pass launch flags like this: `ws://localhost:3000/?--disable-speech-api`
+You can also pass launch flags like this: `ws://localhost:3000/chrome?--disable-speech-api`
+
+If you are only using remote chromium, you can install the `puppeteer-core` node package instead of `puppeteer` to avoid downloading chrome.
+Grover will use `puppeteer` or fallback to `puppeteer-core` if it is available.
+```sh
+npm install puppeteer-core
+```
 
 #### Adding cookies
 To set request cookies when requesting a URL, pass an array of hashes as such
@@ -226,7 +232,7 @@ Grover.new('<some URI with cookies', cookies: header_cookies).to_pdf
 
 #### Adding style tags
 To add style tags, pass an array of style tag options as such
-See [page.addStyleTag](https://github.com/puppeteer/puppeteer/blob/main/docs/api/puppeteer.frameaddstyletagoptions.md) documentation for more details (old documentation with more detailed description is available [here](https://github.com/puppeteer/puppeteer/blob/v15.0.0/docs/api.md#pageaddstyletagoptions)).
+See [page.addStyleTag](https://github.com/puppeteer/puppeteer/blob/main/docs/api/puppeteer.page.addstyletag.md) documentation for more details (old documentation with more detailed description is available [here](https://github.com/puppeteer/puppeteer/blob/v15.0.0/docs/api.md#pageaddstyletagoptions)).
 
 ```ruby
 style_tag_options = [
@@ -239,7 +245,7 @@ Grover.new('<html><body><h1>Heading</h1></body></html>', style_tag_options: styl
 
 #### Adding script tags
 To add script tags, pass an array of script tag options as such
-See documentation for more details [page.addScriptTag]([page.addScriptTag](https://github.com/puppeteer/puppeteer/blob/v15.0.0/main/docs/api.md#pageaddscripttagoptions)) (old documentation is available [here](https://github.com/puppeteer/puppeteer/blob/v15.0.0/main/docs/api.md#pageaddscripttagoptions)).
+See documentation for more details [page.addScriptTag](https://github.com/puppeteer/puppeteer/blob/main/docs/api/puppeteer.page.addscripttag.md) (old documentation is available [here](https://github.com/puppeteer/puppeteer/blob/v15.0.0/docs/api.md#pageaddscripttagoptions)).
 
 ```ruby
 script_tag_options = [
@@ -278,6 +284,16 @@ respond_to do |format|
 
     render layout: 'pdf'
   end
+end
+```
+
+#### Setting custom environment variable for node
+The `node_env_vars` configuration option enables you to set custom environment variables for the spawned node process. For example you might need to disable jemalloc in some environments (https://github.com/Studiosity/grover/issues/80).
+
+```ruby
+# config/initializers/grover.rb
+Grover.configure do |config|
+  config.node_env_vars = { "LD_PRELOAD" => "" }
 end
 ```
 
@@ -336,7 +352,7 @@ Grover.configure do |config|
 end
 ```
 
-#### ignore_path
+### ignore_path
 The `ignore_path` configuration option can be used to tell Grover's middleware whether it should handle/modify
 the response. There are three ways to set up the `ignore_path`:
  * a `String` which matches the start of the request path.
@@ -362,7 +378,7 @@ Grover.configure do |config|
 end
 ```
 
-#### ignore_request
+### ignore_request
 The `ignore_request` configuration option can be used to tell Grover's middleware whether it should handle/modify
 the response. It should be set with a `Proc` which accepts the request (Rack::Request) as a parameter.
 
@@ -380,6 +396,30 @@ Grover.configure do |config|
   end
   # matches `HTTP Header X-BLOCK`
 end
+```
+
+### allow_file_uris
+The `allow_file_uris` option can be used to render an html document from the file system. 
+This should be used with *EXTREME CAUTION*. If used improperly it could potentially be manipulated to reveal
+sensitive files on the system. Do not enable if rendering content from outside entities
+(user uploads, external URLs, etc).
+
+It defaults to `false` preventing local system files from being read.
+
+```ruby
+# config/initializers/grover.rb
+Grover.configure do |config|
+  config.allow_file_uris = true
+end
+```
+
+And used as such:
+```ruby
+# Grover.new accepts a file URI and optional parameters for Puppeteer
+grover = Grover.new('file:///some/local/file.html', format: 'A4')
+
+# Get an inline PDF of the local file
+pdf = grover.to_pdf
 ```
 
 ## Cover pages

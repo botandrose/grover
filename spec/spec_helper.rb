@@ -11,18 +11,41 @@ require 'stringio'
 require 'pdf-reader'
 require 'mini_magick'
 require 'byebug'
+require_relative 'support/test_server'
 
 RSpec.configure do |config|
   config.order = 'random'
   config.filter_run_excluding remote_browser: true
   config.filter_run_when_matching :focus
 
+  config.before(:suite) do
+    TestServer.start
+  end
+
+  config.after(:suite) do
+    TestServer.stop
+  end
+
   include Rack::Test::Methods
 end
 
 MiniMagick.validate_on_create = false
 
+def fixture_path(file)
+  File.join(File.expand_path(__dir__), 'fixtures', file)
+end
+
 def puppeteer_version_on_or_after?(version)
   puppeteer_version = ENV.fetch('PUPPETEER_VERSION', '')
   puppeteer_version.empty? || Gem::Version.new(puppeteer_version) >= Gem::Version.new(version)
+end
+
+def puppeteer_version_on_or_before?(version)
+  puppeteer_version = ENV.fetch('PUPPETEER_VERSION', '')
+  puppeteer_version.empty? || Gem::Version.new(puppeteer_version) <= Gem::Version.new(version)
+end
+
+def linux_system?
+  uname = `uname -s`
+  uname.start_with? 'Linux'
 end
