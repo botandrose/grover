@@ -31,7 +31,6 @@ RSpec.configure do |config|
     TestServer.stop
   end
 
-  include Rack::Test::Methods
 end
 
 def fixture_path(file)

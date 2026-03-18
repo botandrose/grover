@@ -6,6 +6,8 @@ require 'rack/lint'
 require 'rack/builder'
 
 describe Grover::Middleware do
+  include Rack::Test::Methods
+
   subject(:mock_app) do
     builder = Rack::Builder.new
     builder.use described_class
