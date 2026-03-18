@@ -33,9 +33,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'combine_pdf', '~> 1.0'
   spec.add_dependency 'nokogiri', '~> 1'
 
-  spec.add_development_dependency 'mini_magick', '~> 4.12'
+  spec.add_development_dependency 'mini_magick', '~> 5.0'
   spec.add_development_dependency 'pdf-reader', '~> 2.11'
-  spec.add_development_dependency 'rack-test', '~> 1.1'
+  spec.add_development_dependency 'rack-test'
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.12'
   spec.add_development_dependency 'rubocop', '~> 1.43'
