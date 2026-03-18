@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 describe Grover::Middleware do
+  include Rack::Test::Methods
+
   subject(:mock_app) do
     builder = Rack::Builder.new
     builder.use described_class

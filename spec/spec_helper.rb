@@ -26,7 +26,6 @@ RSpec.configure do |config|
     TestServer.stop
   end
 
-  include Rack::Test::Methods
 end
 
 MiniMagick.validate_on_create = false
