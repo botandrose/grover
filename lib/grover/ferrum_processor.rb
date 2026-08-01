@@ -28,7 +28,9 @@ class Grover
 
         page.pdf(encoding: :binary)
       ensure
-        browser.quit
+        # never the memoized reader: if instantiation was what failed, calling it
+        # here launches a second browser just to quit it, masking the real error
+        @browser&.quit
       end
     end
 
