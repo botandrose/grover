@@ -154,11 +154,9 @@ class Grover
       CombinePDF.parse grover.to_pdf
     end
 
+    # Cacheability is the app's call, not ours: dropping the headers it set makes
+    # every repeat request re-render, which is the expensive thing here.
     def assign_headers(headers, body, content_type)
-      # Do not cache results
-      headers.delete 'ETag'
-      headers.delete 'Cache-Control'
-
       headers['Content-Length'] = (body.respond_to?(:bytesize) ? body.bytesize : body.size).to_s
       headers['Content-Type'] = content_type
     end

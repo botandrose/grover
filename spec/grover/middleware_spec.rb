@@ -366,10 +366,10 @@ describe Grover::Middleware do
 
     describe 'caching' do
       context 'when requesting a PDF' do
-        it 'deletes the cache headers' do
+        it 'keeps the cache headers set by the app' do
           get 'http://www.example.org/test.pdf'
-          expect(last_response.headers).not_to have_key 'ETag'
-          expect(last_response.headers).not_to have_key 'Cache-Control'
+          expect(last_response.headers['ETag']).to eq 'foo'
+          expect(last_response.headers['Cache-Control']).to eq 'max-age=2592000, public'
         end
 
         context 'when app configuration has PDF middleware disabled' do
@@ -393,10 +393,10 @@ describe Grover::Middleware do
         context 'when app configuration has PNG middleware enabled' do
           before { allow(Grover.configuration).to receive(:use_png_middleware).and_return true }
 
-          it 'deletes the cache headers' do
+          it 'keeps the cache headers set by the app' do
             get 'http://www.example.org/test.png'
-            expect(last_response.headers).not_to have_key 'ETag'
-            expect(last_response.headers).not_to have_key 'Cache-Control'
+            expect(last_response.headers['ETag']).to eq 'foo'
+            expect(last_response.headers['Cache-Control']).to eq 'max-age=2592000, public'
           end
         end
       end
@@ -411,16 +411,16 @@ describe Grover::Middleware do
         context 'when app configuration has JPEG middleware enabled' do
           before { allow(Grover.configuration).to receive(:use_jpeg_middleware).and_return true }
 
-          it 'deletes the cache headers for JPEG' do
+          it 'keeps the cache headers set by the app for JPEG' do
             get 'http://www.example.org/test.jpeg'
-            expect(last_response.headers).not_to have_key 'ETag'
-            expect(last_response.headers).not_to have_key 'Cache-Control'
+            expect(last_response.headers['ETag']).to eq 'foo'
+            expect(last_response.headers['Cache-Control']).to eq 'max-age=2592000, public'
           end
 
-          it 'deletes the cache headers for JPG' do
+          it 'keeps the cache headers set by the app for JPG' do
             get 'http://www.example.org/test.jpg'
-            expect(last_response.headers).not_to have_key 'ETag'
-            expect(last_response.headers).not_to have_key 'Cache-Control'
+            expect(last_response.headers['ETag']).to eq 'foo'
+            expect(last_response.headers['Cache-Control']).to eq 'max-age=2592000, public'
           end
         end
       end
