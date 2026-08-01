@@ -33,7 +33,7 @@ class Grover
         configure_env_for_grover_request(env)
       end
       status, headers, response = @app.call(env)
-      response = update_response response, headers if grover_request? && html_content?(headers)
+      response = update_response response, headers if grover_request? && convertible?(status, headers)
 
       [status, headers, response]
     ensure
@@ -84,6 +84,12 @@ class Grover
       return false unless ignore_request.is_a?(Proc)
 
       ignore_request.call @request
+    end
+
+    # Redirects and error pages are served as text/html too, and rendering those
+    # to PDF burns a browser launch on a body the client will never read.
+    def convertible?(status, headers)
+      status.to_i == 200 && html_content?(headers)
     end
 
     def html_content?(headers)

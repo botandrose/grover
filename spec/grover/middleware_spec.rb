@@ -20,10 +20,11 @@ describe Grover::Middleware do
       @request_env = env.deep_dup
       response_size = 0
       response.each { |part| response_size += part.length }
-      [200, headers.merge('Content-Length' => response_size.to_s), response]
+      [status, headers.merge('Content-Length' => response_size.to_s), response]
     end
   end
 
+  let(:status) { 200 }
   let(:app) { Rack::Lint.new(subject) }
   let(:headers) do
     {
@@ -329,6 +330,36 @@ describe Grover::Middleware do
           expect(response_env['PATH_INFO']).to eq '/test.html'
           expect(response_env).not_to have_key 'REQUEST_URI'
           expect(response_env).not_to have_key 'Rack-Middleware-Grover'
+        end
+      end
+    end
+
+    describe 'unsuccessful responses' do
+      context 'when the downstream response is a redirect' do
+        let(:status) { 302 }
+        let(:headers) do
+          {
+            'Content-Type' => 'text/html',
+            'Location' => 'http://www.example.org/elsewhere'
+          }
+        end
+
+        it 'passes the response through without rendering it' do
+          get 'http://www.example.org/test.pdf'
+          expect(last_response.status).to eq 302
+          expect(last_response.headers['Content-Type']).to eq 'text/html'
+          expect(last_response.body).to eq 'Grover McGroveryface'
+        end
+      end
+
+      context 'when the downstream response is a server error' do
+        let(:status) { 500 }
+
+        it 'passes the response through without rendering it' do
+          get 'http://www.example.org/test.pdf'
+          expect(last_response.status).to eq 500
+          expect(last_response.headers['Content-Type']).to eq 'text/html'
+          expect(last_response.body).to eq 'Grover McGroveryface'
         end
       end
     end
