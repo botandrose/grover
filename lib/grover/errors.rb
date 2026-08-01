@@ -16,4 +16,5 @@ class Grover
     end
   end
   UnsafeConfigurationError = Class.new(Error)
+  ConcurrencyLimitError = Class.new(Error)
 end
